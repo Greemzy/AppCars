@@ -14,8 +14,17 @@
         value="/WEB-INF/views/home.jsp" />
     </definition>
     
+    <definition name="hello" extends="base.definition">
+        <put-attribute name="body"    
+        value="/WEB-INF/views/hello.jsp" />
+    </definition>
+    
     <definition name="home2" extends="base.definition">
         <put-attribute name="body"    
         value="/WEB-INF/views/home2.jsp" />
+    </definition>
+    <definition name="login" extends="base.definition">
+        <put-attribute name="body"    
+        value="/WEB-INF/views/login.jsp" />
     </definition>
 </tiles-definitions>
