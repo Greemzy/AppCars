@@ -87,7 +87,4 @@ public class User {
         this.password = BCrypt.hashpw(password, this.salt);
         this.activated = true;
     }
-
- 
-    // getters and setters
 }

@@ -75,13 +75,16 @@ public class HomeController {
 		 User user2 = manager.getUser(user.getEmail());
 		 if(user2 != null)
 		 {
-			 if(user2.getPassword() == BCrypt.hashpw(user.getPassword(), user2.getSalt())){
+			 String password = BCrypt.hashpw(user.getPassword(), user2.getSalt());
+			 boolean match = user2.getPassword().equals(password);
+			 if(user2.getPassword().equals(password)){
 				 HttpSession session = request.getSession();
 				 session.setAttribute( "SESSION_USER", user2 );
 				 modelview.setViewName("home");
 			 }
 			 else{
-				 modelview.addObject("error", "Mot de passe incorrect");
+				 modelview.addObject("error", password);
+				 modelview.addObject("msg", user2.getEmail());
 				 modelview.setViewName("login");
 			 } 
 		 }
@@ -116,10 +119,21 @@ public class HomeController {
 	public ModelAndView register(@ModelAttribute("user")User user) {
 		
 	  ModelAndView model = new ModelAndView();
-	  User newUser = new User(user.getFirstname(),user.getLastname(),user.getEmail(),user.getPassword());
-	  if(manager.createUser(newUser)){
-		  model.addObject("msg", "Utilisateur créer");
+	  model.setViewName("register");
+	  if(user.getFirstname() ==  "" || user.getLastname() == "" || user.getEmail() == "" || user.getPassword() == ""){
+		  model.addObject("error", "Champs non valide");
+		  return model;
 	  }
+	  User newUser = new User(user.getFirstname(),user.getLastname(),user.getEmail(),user.getPassword());
+	  if(!manager.EmailExist(user.getEmail())){
+		  if(manager.createUser(newUser)){
+			  model.addObject("msg", "Utilisateur créer");
+		  }
+	  }
+	  else{
+		  model.addObject("error", "Email existant");
+	  }
+	  
 	  
 	  model.setViewName("register");
 

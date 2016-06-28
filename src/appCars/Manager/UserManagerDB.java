@@ -98,5 +98,27 @@ public class UserManagerDB {
 		}
 		return user;
 	}
+	
+	public boolean EmailExist(String email){
+		PreparedStatement stmt = null;
+		User user = null;
+		ResultSet rs = null;
+		boolean result = false;
+		try{
+			String userSQL = "SELECT * FROM users WHERE email = ?";
+			stmt = this.connection.prepareStatement(userSQL);
+			stmt.setString(1, email);
+			rs = stmt.executeQuery();
+			while(rs.next()){
+				result = true;
+				break;
+			}
+			rs.close();
+			stmt.close();
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 }
