@@ -1,19 +1,34 @@
 package appCars.Controller;
 
+import java.lang.ProcessBuilder.Redirect;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
+import org.apache.catalina.connector.Request;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import appCars.Manager.UserManagerDB;
+import appCars.Model.User;
+
 @Controller
 public class HomeController {
  
+	private UserManagerDB manager = new UserManagerDB();
     /*@RequestMapping(value = "/page1", method = RequestMethod.GET)
     public ModelAndView firstPage(Model model) {
         model.addAttribute("firstPageMessage", "This is the first page");
@@ -26,7 +41,7 @@ public class HomeController {
         return new ModelAndView("home2");
     }*/
 	
-	@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
+	/*@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
 	public ModelAndView defaultPage() {
 
 	  ModelAndView model = new ModelAndView();
@@ -35,7 +50,7 @@ public class HomeController {
 	  model.setViewName("hello");
 	  return model;
 
-	}
+	}*/
 
 	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
 	public ModelAndView adminPage() {
@@ -48,19 +63,65 @@ public class HomeController {
 
 	}
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public ModelAndView login(@RequestParam(value = "error", required = false) String error,
-		@RequestParam(value = "logout", required = false) String logout) {
-
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public ModelAndView login(@Valid @ModelAttribute("user")User user, 
+		      BindingResult result, ModelMap model, HttpServletRequest request) {
+		 ModelAndView modelview = new ModelAndView();
+		 if (result.hasErrors()) {
+			 modelview.addObject("error", "There are errors");
+		 }
+		 //model.addAttribute("email", user.getEmail());
+		 //model.addAttribute("password", user.getPassword());
+		 User user2 = manager.getUser(user.getEmail());
+		 if(user2 != null)
+		 {
+			 if(user2.getPassword() == BCrypt.hashpw(user.getPassword(), user2.getSalt())){
+				 HttpSession session = request.getSession();
+				 session.setAttribute( "SESSION_USER", user2 );
+				 modelview.setViewName("home");
+			 }
+			 else{
+				 modelview.addObject("error", "Mot de passe incorrect");
+				 modelview.setViewName("login");
+			 } 
+		 }
+		 else
+		 {
+			 modelview.addObject("error", "Utilisateur inconnu");
+			 modelview.setViewName("login");
+		 } 
+	  return modelview;
+	}
+	
+	@RequestMapping(value = {"/", "/login"}, method = RequestMethod.GET)
+	public ModelAndView login() {
+	
 	  ModelAndView model = new ModelAndView();
-	  if (error != null) {
-		model.addObject("error", "Invalid username and password!");
-	  }
-
-	  if (logout != null) {
-		model.addObject("msg", "You've been logged out successfully.");
-	  }
 	  model.setViewName("login");
+
+	  return model;
+
+	}
+	@RequestMapping(value = "/register", method = RequestMethod.GET)
+	public ModelAndView register() {
+		
+	  ModelAndView model = new ModelAndView();
+	  model.setViewName("register");
+
+	  return model;
+
+	}
+	
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	public ModelAndView register(@ModelAttribute("user")User user) {
+		
+	  ModelAndView model = new ModelAndView();
+	  User newUser = new User(user.getFirstname(),user.getLastname(),user.getEmail(),user.getPassword());
+	  if(manager.createUser(newUser)){
+		  model.addObject("msg", "Utilisateur créer");
+	  }
+	  
+	  model.setViewName("register");
 
 	  return model;
 

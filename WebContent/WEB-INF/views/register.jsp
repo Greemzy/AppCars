@@ -38,7 +38,7 @@
 <body onload='document.loginForm.username.focus();'>
 	<div id="login-box">
 
-		<h2>Connexion</h2>
+		<h2>Inscription</h2>
 
 		<c:if test="${not empty error}">
 			<div class="error">${error}</div>
@@ -48,23 +48,32 @@
 		</c:if>
 
 		<form name='loginForm'
-		  action="<c:url value='/login ' />" method='POST' modelAttribute="user">
+		  action="<c:url value='/register ' />" method='POST' modelAttribute="user">
 
 		<table>
 			<tr>
-				<td>User:</td>
+				<td>Nom:</td>
+				<td><input type='text' name='lastname'></td>
+			</tr>
+			<tr>
+				<td>Prénom:</td>
+				<td><input type='text' name='firstname'></td>
+			</tr>
+			<tr>
+				<td>Email:</td>
 				<td><input type='email' name='email'></td>
 			</tr>
+			
 			<tr>
 				<td>Password:</td>
 				<td><input type='password' name='password' /></td>
 			</tr>
 			<tr>
 				<td colspan='2'><input name="submit" type="submit"
-				  value="submit" /></td>
+				  value="S'inscrire" /></td>
 			</tr>
 			<tr>
-				<td><a href="/register">Inscription</a></td>
+				<td><a href="/login">Se connecter</a></td>
 				<td><a href="/forgotpassword">Mot de passe oublié</a></td>
 			</tr>
 		  </table>

@@ -78,13 +78,13 @@ public class UserManagerDB {
 			stmt.setString(1, email);
 			rs = stmt.executeQuery();
 			while(rs.next()){
-				String fistname = user.getFirstname();
-				String lastname = user.getLastname();
-				String password = user.getPassword();
-				String email2 = user.getEmail();
-				String salt = user.getSalt();
-				String token = user.getToken();
-				Boolean activated = user.isActivated();
+				String fistname = rs.getString("firstname");
+				String lastname = rs.getString("lastname");
+				String password = rs.getString("password");
+				String email2 = rs.getString("email");
+				String salt = rs.getString("salt");
+				String token = rs.getString("token");
+				Boolean activated = rs.getBoolean("activated");
 				user = new User(fistname,lastname,password,email2);
 				user.setSalt(salt);
 				user.setToken(token);
