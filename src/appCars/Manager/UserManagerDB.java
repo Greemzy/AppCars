@@ -85,7 +85,7 @@ public class UserManagerDB {
 				String salt = rs.getString("salt");
 				String token = rs.getString("token");
 				Boolean activated = rs.getBoolean("activated");
-				user = new User(fistname,lastname,password,email2);
+				user = new User(fistname,lastname,email2,password);
 				user.setSalt(salt);
 				user.setToken(token);
 				user.setActivated(activated);

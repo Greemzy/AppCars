@@ -87,4 +87,12 @@ public class User {
         this.password = BCrypt.hashpw(password, this.salt);
         this.activated = true;
     }
+    
+    public String getStringUser(){
+    	return "Firstname :" + this.firstname +
+    			"\n Lastname" + this.lastname +
+    			"\n email" + this.email +
+    			"\n password" + this.password +
+    			"\n salt" + this.salt;
+    }
 }

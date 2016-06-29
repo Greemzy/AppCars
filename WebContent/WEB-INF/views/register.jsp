@@ -73,8 +73,8 @@
 				  value="S'inscrire" /></td>
 			</tr>
 			<tr>
-				<td><a href="/login">Se connecter</a></td>
-				<td><a href="/forgotpassword">Mot de passe oublié</a></td>
+				<td><a href="login">Se connecter</a></td>
+				<td><a href="forgotpassword">Mot de passe oublié</a></td>
 			</tr>
 		  </table>
 

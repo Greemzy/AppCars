@@ -64,8 +64,8 @@
 				  value="submit" /></td>
 			</tr>
 			<tr>
-				<td><a href="/register">Inscription</a></td>
-				<td><a href="/forgotpassword">Mot de passe oublié</a></td>
+				<td><a href="register">Inscription</a></td>
+				<td><a href="forgotpassword">Mot de passe oublié</a></td>
 			</tr>
 		  </table>
 

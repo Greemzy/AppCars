@@ -77,14 +77,17 @@ public class HomeController {
 		 {
 			 String password = BCrypt.hashpw(user.getPassword(), user2.getSalt());
 			 boolean match = user2.getPassword().equals(password);
-			 if(user2.getPassword().equals(password)){
-				 HttpSession session = request.getSession();
+			 if(BCrypt.checkpw(user.getPassword(), user2.getPassword())){
+				 /*HttpSession session = request.getSession();
 				 session.setAttribute( "SESSION_USER", user2 );
-				 modelview.setViewName("home");
+				 modelview.setViewName("home");*/
+				 modelview.addObject("error", "ok");
+				 modelview.addObject("msg", "email :" + user2.getStringUser());
+				 modelview.setViewName("login");
 			 }
 			 else{
 				 modelview.addObject("error", password);
-				 modelview.addObject("msg", user2.getEmail());
+				 modelview.addObject("msg", "email :" + user2.getStringUser());
 				 modelview.setViewName("login");
 			 } 
 		 }
