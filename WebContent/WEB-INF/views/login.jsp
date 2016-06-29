@@ -48,7 +48,7 @@
 		</c:if>
 
 		<form name='loginForm'
-		  action="<c:url value='/login ' />" method='POST' modelAttribute="user">
+		  action="<c:url value='/login' />" method='POST' modelAttribute="user">
 
 		<table>
 			<tr>

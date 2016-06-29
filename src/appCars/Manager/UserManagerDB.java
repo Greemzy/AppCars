@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 import appCars.Model.User;
 
 public class UserManagerDB {
@@ -38,9 +40,10 @@ public class UserManagerDB {
 			stmt = this.connection.prepareStatement(userSQL);
 			stmt.setString(1, user.getFirstname());
 			stmt.setString(2, user.getLastname());
-			stmt.setString(3, user.getPassword());
+			String salt = BCrypt.gensalt(12);
+			stmt.setString(3, BCrypt.hashpw(user.getPassword(),salt));
 			stmt.setString(4, user.getEmail());
-			stmt.setString(5, user.getSalt());
+			stmt.setString(5, salt);
 			stmt.setString(6, user.getToken());
 			stmt.setBoolean(7, user.isActivated());
 			

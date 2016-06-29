@@ -82,9 +82,8 @@ public class User {
     public User(String firstname,String lastname, String email, String password) {
         this.firstname = firstname;
         this.lastname = lastname;
+        this.password = password;
         this.email = email;
-        this.salt = BCrypt.gensalt(12);
-        this.password = BCrypt.hashpw(password, this.salt);
         this.activated = true;
     }
     
