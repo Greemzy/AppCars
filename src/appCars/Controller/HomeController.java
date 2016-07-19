@@ -66,6 +66,11 @@ public class HomeController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ModelAndView login(@Valid @ModelAttribute("user")User user, 
 		      BindingResult result, ModelMap model, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		  if(session.getAttribute("user") != null){
+			  return new ModelAndView("redirect:/home");
+		  }
 		 ModelAndView modelview = new ModelAndView();
 		 if (result.hasErrors()) {
 			 modelview.addObject("error", "There are errors");
@@ -76,7 +81,6 @@ public class HomeController {
 		 if(user2 != null)
 		 {
 			 if(BCrypt.checkpw(user.getPassword(), user2.getPassword())){
-				 HttpSession session = request.getSession();
 				 session.setAttribute( "user", user2 );
 				 modelview.setViewName("home");
 			 }
@@ -95,27 +99,50 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = {"/", "/login"}, method = RequestMethod.GET)
-	public ModelAndView login() {
+	public ModelAndView login(HttpServletRequest request) {
 	
 	  ModelAndView model = new ModelAndView();
-	  model.setViewName("login");
+	  HttpSession session = request.getSession();
+	  if(session.getAttribute("user") != null){
+		  return new ModelAndView("redirect:/home");
+	  }
+	  else{
+		  model.setViewName("login");
+	  }
+	  
 
 	  return model;
 
 	}
+	
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
-	public ModelAndView register() {
+	public ModelAndView register(HttpServletRequest request) {
 		
 	  ModelAndView model = new ModelAndView();
+	  HttpSession session = request.getSession();
+	  if(session.getAttribute("user") != null){
+		  return new ModelAndView("redirect:/home");
+	  }
 	  model.setViewName("register");
 
 	  return model;
 
 	}
 	
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public ModelAndView register(@ModelAttribute("user")User user) {
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
+	public ModelAndView home() {
 		
+	  ModelAndView model = new ModelAndView();
+	  model.setViewName("home");
+
+	  return model;
+
+	}
+
+	
+	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	public ModelAndView register(HttpServletRequest request,@ModelAttribute("user")User user) {
+		 
 	  ModelAndView model = new ModelAndView();
 	  model.setViewName("register");
 	  if(user.getFirstname() ==  "" || user.getLastname() == "" || user.getEmail() == "" || user.getPassword() == ""){
@@ -127,13 +154,20 @@ public class HomeController {
 		  if(manager.createUser(newUser)){
 			  model.addObject("msg", "Utilisateur créé");
 		  }
+		  else{
+			  model.addObject("error", "une erreur est survenue");
+		  }
 	  }
 	  else{
 		  model.addObject("error", "Email existant");
 	  }
 	  
+	  HttpSession session = request.getSession();
+	  if(session.getAttribute("user") != null){
+		  return new ModelAndView("redirect:/home");
+	  }
 	  
-	  model.setViewName("register");
+	  model.setViewName("login");
 
 	  return model;
 
