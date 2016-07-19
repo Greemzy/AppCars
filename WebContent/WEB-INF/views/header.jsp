@@ -12,9 +12,9 @@
         </div>        
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="index.html">Accueil</a></li>
-            <li><a href="about.html">Trajets</a></li>
-            <li><a href="works.html">Profil</a></li>
+            <li class="active"><a href="home">Accueil</a></li>
+			<li><a href="trajet">Trajets</a></li>
+           	<li><a href="profil">Profil</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
