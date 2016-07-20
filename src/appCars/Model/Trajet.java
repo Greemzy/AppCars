@@ -1,45 +1,38 @@
 package appCars.Model;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.util.Date;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import appCars.Manager.TrajetManagerDB;
 
 public class Trajet {
+	
     private int id;
     private String nom;
     private int places;
-    private double start_lat;
-    private double start_lng;
-    private double end_lat;
-    private double end_lng;
+    private String origin;
+    private String destination;
     private Date depart;
     private int user_id;
     private int status;
+    private int placesDispo;
  
 	
-	public Trajet(int id, String nom, int places, double start_lat, double start_lng, double end_lat, double end_lng,
+	public Trajet(int id, String nom, int places,String origin, String destination,
 			Date depart, int user_id, int status) {
 		super();
 		this.id = id;
 		this.nom = nom;
 		this.places = places;
-		this.start_lat = start_lat;
-		this.start_lng = start_lng;
-		this.end_lat = end_lat;
-		this.end_lng = end_lng;
+		this.origin = origin;
+		this.destination = destination;
 		this.depart = depart;
 		this.user_id = user_id;
 		this.status = status;
 	}
 
-
-	public int isStatus() {
-		return status;
-	}
-
-
+	
 	public void setStatus(int status) {
 		this.status = status;
 	}
@@ -54,7 +47,8 @@ public class Trajet {
 		this.id = id;
 	}
 
-
+	@NotNull
+	@Size(max=255)
 	public String getNom() {
 		return nom;
 	}
@@ -64,7 +58,7 @@ public class Trajet {
 		this.nom = nom;
 	}
 
-
+	@NotNull
 	public int getPlaces() {
 		return places;
 	}
@@ -74,48 +68,35 @@ public class Trajet {
 		this.places = places;
 	}
 
-
-	public double getStart_lat() {
-		return start_lat;
+	@NotNull
+	@Size(max=255)
+	public String getOrigin() {
+		return origin;
 	}
 
 
-	public void setStart_lat(double start_lat) {
-		this.start_lat = start_lat;
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
+	@NotNull
+	@Size(max=255)
+	public String getDestination() {
+		return destination;
 	}
 
 
-	public double getStart_lng() {
-		return start_lng;
+	public void setDestination(String destination) {
+		this.destination = destination;
 	}
 
-
-	public void setStart_lng(double start_lng) {
-		this.start_lng = start_lng;
+	@NotNull
+	public int getStatus() {
+		return status;
 	}
 
-
-	public double getEnd_lat() {
-		return end_lat;
-	}
-
-
-	public void setEnd_lat(double end_lat) {
-		this.end_lat = end_lat;
-	}
-
-
-	public double getEnd_lng() {
-		return end_lng;
-	}
-
-
-	public void setEnd_lng(double end_lng) {
-		this.end_lng = end_lng;
-	}
-
-
-	public Date getDepart() {
+	@NotNull
+	public Date getDepart() {		
 		return depart;
 	}
 
@@ -124,7 +105,7 @@ public class Trajet {
 		this.depart = depart;
 	}
 
-
+	@NotNull
 	public int getUser_id() {
 		return user_id;
 	}
@@ -133,9 +114,23 @@ public class Trajet {
 	public void setUser_id(int user_id) {
 		this.user_id = user_id;
 	}
+	
+	public int getPlacesDispo() {
+		TrajetManagerDB managerTrajet = new TrajetManagerDB();
+		return managerTrajet.TrajetPlaces(this.id);
+	}
 
 
 	public Trajet() {
-		
+		this.setPlaces(1);
+    }
+	
+	public String getStringTrajet(){
+    	return "name :" + this.nom +
+    			"\n Origine " + this.origin +
+    			"\n Destination " + this.destination +
+    			"\n Places " + this.places +
+    			"\n Date " + this.depart+
+    			"\n Status " + this.status;
     }
 }

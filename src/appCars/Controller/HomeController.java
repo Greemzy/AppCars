@@ -1,25 +1,15 @@
 package appCars.Controller;
 
-import java.lang.ProcessBuilder.Redirect;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-
-import org.apache.catalina.connector.Request;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import appCars.Manager.UserManagerDB;
@@ -29,39 +19,6 @@ import appCars.Model.User;
 public class HomeController {
  
 	private UserManagerDB manager = new UserManagerDB();
-    /*@RequestMapping(value = "/page1", method = RequestMethod.GET)
-    public ModelAndView firstPage(Model model) {
-        model.addAttribute("firstPageMessage", "This is the first page");
-        return new ModelAndView("home");
-    }
- 
-    @RequestMapping(value = "/page2", method = RequestMethod.GET)
-    public ModelAndView secondPage(Model model) {
-        model.addAttribute("secondPageMessage", "This is the second page");
-        return new ModelAndView("home2");
-    }*/
-	
-	/*@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
-	public ModelAndView defaultPage() {
-
-	  ModelAndView model = new ModelAndView();
-	  model.addObject("title", "Spring Security Login Form - Database Authentication");
-	  model.addObject("message", "This is default page!");
-	  model.setViewName("hello");
-	  return model;
-
-	}*/
-
-	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
-	public ModelAndView adminPage() {
-
-	  ModelAndView model = new ModelAndView();
-	  model.addObject("title", "Spring Security Login Form - Database Authentication");
-	  model.addObject("message", "This page is for ROLE_ADMIN only!");
-	  model.setViewName("admin");
-	  return model;
-
-	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ModelAndView login(@Valid @ModelAttribute("user")User user, 
@@ -130,19 +87,22 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
-	public ModelAndView home() {
-		
-	  ModelAndView model = new ModelAndView();
-	  model.setViewName("home");
-
-	  return model;
-
+	public ModelAndView home(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		if(session.getAttribute("user") == null){
+		  return new ModelAndView("redirect:/login");
+		}
+		return new ModelAndView("home");
 	}
 
 	
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ModelAndView register(HttpServletRequest request,@ModelAttribute("user")User user) {
-		 
+	HttpSession session = request.getSession();
+	  if(session.getAttribute("user") != null){
+		  return new ModelAndView("redirect:/home");
+	  }
+		  
 	  ModelAndView model = new ModelAndView();
 	  model.setViewName("register");
 	  if(user.getFirstname() ==  "" || user.getLastname() == "" || user.getEmail() == "" || user.getPassword() == ""){
@@ -161,32 +121,8 @@ public class HomeController {
 	  else{
 		  model.addObject("error", "Email existant");
 	  }
-	  
-	  HttpSession session = request.getSession();
-	  if(session.getAttribute("user") != null){
-		  return new ModelAndView("redirect:/home");
-	  }
-	  
 	  model.setViewName("login");
 
-	  return model;
-
-	}
-	
-	//for 403 access denied page
-	@RequestMapping(value = "/403", method = RequestMethod.GET)
-	public ModelAndView accesssDenied() {
-
-	  ModelAndView model = new ModelAndView();
-		
-	  //check if user is login
-	  Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	  if (!(auth instanceof AnonymousAuthenticationToken)) {
-		UserDetails userDetail = (UserDetails) auth.getPrincipal();	
-		model.addObject("username", userDetail.getUsername());
-	  }
-		
-	  model.setViewName("403");
 	  return model;
 
 	}

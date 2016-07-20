@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
@@ -13,13 +15,15 @@ import appCars.Model.User;
 public class UserManagerDB {
 
 	private Connection connection;
+	private static Logger log = Logger.getLogger(UserManagerDB.class.getName());
+	
 	
 	public UserManagerDB() {
 			try {
 				this.connection = this.getConnection();
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Erreur de connexion bdd", e);
 			}		
 	}
 	
@@ -50,7 +54,7 @@ public class UserManagerDB {
 			result = stmt.executeUpdate();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "create user", e);
 		}
 		return result == 1;
 	}
@@ -65,7 +69,7 @@ public class UserManagerDB {
 			result = stmt.executeUpdate();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "delete user", e);
 		}
 		return result == 1;
 	}
@@ -74,13 +78,13 @@ public class UserManagerDB {
 		PreparedStatement stmt = null;
 		User user = null;
 		ResultSet rs = null;
-		int result = 0;
 		try{
 			String userSQL = "SELECT * FROM users WHERE email = ?";
 			stmt = this.connection.prepareStatement(userSQL);
 			stmt.setString(1, email);
 			rs = stmt.executeQuery();
 			while(rs.next()){
+				int id = rs.getInt("id");
 				String fistname = rs.getString("firstname");
 				String lastname = rs.getString("lastname");
 				String password = rs.getString("password");
@@ -89,6 +93,7 @@ public class UserManagerDB {
 				String token = rs.getString("token");
 				Boolean activated = rs.getBoolean("activated");
 				user = new User(fistname,lastname,email2,password);
+				user.setId(id);
 				user.setSalt(salt);
 				user.setToken(token);
 				user.setActivated(activated);
@@ -97,14 +102,13 @@ public class UserManagerDB {
 			rs.close();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "get user", e);
 		}
 		return user;
 	}
 	
 	public boolean EmailExist(String email){
 		PreparedStatement stmt = null;
-		User user = null;
 		ResultSet rs = null;
 		boolean result = false;
 		try{
@@ -119,7 +123,7 @@ public class UserManagerDB {
 			rs.close();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "Email exists", e);
 		}
 		return result;
 	}

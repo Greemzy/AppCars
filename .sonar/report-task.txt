@@ -1,0 +1,5 @@
+projectKey=freeshuttle:appCars
+serverUrl=http://localhost:9000
+dashboardUrl=http://localhost:9000/dashboard/index/freeshuttle:appCars
+ceTaskId=AVYKtXJqufwxN2lxoNVj
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AVYKtXJqufwxN2lxoNVj

@@ -1,7 +1,5 @@
 package appCars.Model;
 
-import org.springframework.security.crypto.bcrypt.BCrypt;
-
 public class User {
     private int id;
     private String firstname;

@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
+
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <head>
@@ -11,20 +13,26 @@
 		<!-- Bootstrap core CSS -->
 	    <link href="css/bootstrap.css" rel="stylesheet">
 	    <link href="css/font-awesome.min.css" rel="stylesheet">
+	    <link href="js/datatables/css/datatable.css" rel="stylesheet">
+	    <link href="js/datatables/css/bootstrap.css" rel="stylesheet">
 
 	    <!-- Custom styles for this template -->
 	    <link href="css/main.css" rel="stylesheet">
+	   
+	    
+   	    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
+	    <script src="js/bootstrap.min.js"></script>
+	    <script src="js/datatables/jquery.dataTables.min.js"></script>
+	    <script src="js/moment-with-locales.min.js"></script>
+	    <script src="js/bootstrap-datetimepicker.fr.js"></script>
+	    <script src="js/bootstrap-datetimepicker.min.js"></script>
 </head>
 
 <body> 
 		<tiles:insertAttribute name="header" />
 		<tiles:insertAttribute name="body" />
 		<tiles:insertAttribute name="footer" />
-		<!-- Bootstrap core JavaScript
-	    ================================================== -->
-	    <!-- Placed at the end of the document so the pages load faster -->
-	    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-	    <script src="js/bootstrap.min.js"></script>
+		
 </body>
 
 </html>

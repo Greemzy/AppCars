@@ -5,28 +5,26 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.sql.Date;
-
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import appCars.Model.Trajet;
 
 public class TrajetManagerDB {
 
 	private Connection connection;
+	private static Logger log = Logger.getLogger(TrajetManagerDB.class.getName());
 	
 	public TrajetManagerDB() {
 			try {
 				this.connection = this.getConnection();
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.log(Level.SEVERE, "Erreur de connexion bdd", e);
 			}		
 	}
 	
@@ -43,21 +41,19 @@ public class TrajetManagerDB {
 		int result = 0;
 		try{
 			String trajetSQL = "INSERT INTO "
-					+ "trajets (nom,places,start_lat,start_lng,end_lat,end_lng,depart,user_id,status) VALUES(?,?,?,?,?,?,?,?,?);";
+					+ "trajets (nom,places,origin,destination,depart,user_id,status) VALUES(?,?,?,?,?,?,?);";
 			stmt = this.connection.prepareStatement(trajetSQL);
 			stmt.setString(1, trajet.getNom());
 			stmt.setInt(2, trajet.getPlaces());
-			stmt.setDouble(3, trajet.getStart_lat());
-			stmt.setDouble(4, trajet.getStart_lng());
-			stmt.setDouble(5, trajet.getEnd_lat());
-			stmt.setDouble(6, trajet.getEnd_lng());
-			stmt.setDate(7, trajet.getDepart());
-			stmt.setInt(8, trajet.getUser_id());
-			stmt.setBoolean(9, true);
+			stmt.setString(3, trajet.getOrigin());
+			stmt.setString(4, trajet.getDestination());
+			stmt.setDate(5, new java.sql.Date(trajet.getDepart().getTime()));
+			stmt.setInt(6, trajet.getUser_id());
+			stmt.setBoolean(7, true);
 			result = stmt.executeUpdate();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "create trajet bdd", e);
 		}
 		return result == 1;
 	}
@@ -73,7 +69,7 @@ public class TrajetManagerDB {
 			result = stmt.executeUpdate();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "delete trajet", e);
 		}
 		return result == 1;
 	}
@@ -83,81 +79,81 @@ public class TrajetManagerDB {
 		PreparedStatement stmt = null;
 		Trajet trajet = null;
 		ResultSet rs = null;
-		int result = 0;
 		try{
 			String trajetSQL = "SELECT * FROM trajets WHERE id = ?";
 			stmt = this.connection.prepareStatement(trajetSQL);
 			stmt.setInt(1, id);
 			rs = stmt.executeQuery();
 			while(rs.next()){
-				String name = rs.getString("name");
+				String name = rs.getString("nom");
 				int places = rs.getInt("places");
-				double slat = rs.getDouble("start_lat");
-				double slng = rs.getDouble("start_lng");
-				double elat = rs.getDouble("end_lat");
-				double elng = rs.getDouble("end_lng");
+				String origin = rs.getString("origin");
+				String destination = rs.getString("destination");
 				Date date = rs.getDate("depart");
 				int user_id = rs.getInt("user_id");
 				int status = rs.getInt("status");
-				trajet = new Trajet(id,name,places,slat,slng,elat,elng,date,user_id,status);
+				trajet = new Trajet(id,name,places,origin,destination,date,user_id,status);
 				break;
 			}
 			rs.close();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "get trajet", e);
 		}
 		return trajet;
 	}
 	
 	public int TrajetPlaces(int id){
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+		Trajet trajet = this.getTrajet(id);
 		int i = 0;
-		try{
-			String trajetSQL = "SELECT * FROM users_trajets WHERE trajet_id = ?";
-			stmt = this.connection.prepareStatement(trajetSQL);
-			stmt.setInt(1, id);
-			rs = stmt.executeQuery();
-			while(rs.next()){
-				i += rs.getInt("places");
+		if(trajet != null){
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			i = trajet.getPlaces();
+			try{
+				String trajetSQL = "SELECT * FROM users_trajets WHERE trajet_id = ?";
+				stmt = this.connection.prepareStatement(trajetSQL);
+				stmt.setInt(1, id);
+				rs = stmt.executeQuery();
+				while(rs.next()){
+					i -= rs.getInt("place");
+				}
+				rs.close();
+				stmt.close();
+			}catch(SQLException e){
+				log.log(Level.SEVERE, "Trajet Places", e);
 			}
-			rs.close();
-			stmt.close();
-		}catch(SQLException e){
-			e.printStackTrace();
 		}
 		return i;
 	}
 	
 	public List<Trajet> GetTrajetsDispo(){
 		PreparedStatement stmt = null;
-		List<Trajet> trajets = null;
+		List<Trajet> trajets = new ArrayList<>();
 		ResultSet rs = null;
 		try{
-			String trajetSQL = "SELECT * FROM trajets where depart > ?";
+			String trajetSQL = "SELECT * FROM trajets where depart < ?";
 			stmt = this.connection.prepareStatement(trajetSQL);
-			String datestring = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime().getTime());
-			stmt.setString(1, datestring);
+			// create a java calendar instance
+			Date datestring = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+			stmt.setDate(1, datestring);
 			rs = stmt.executeQuery();
 			while(rs.next()){
 				int id = rs.getInt("id");
-				String name = rs.getString("name");
+				String name = rs.getString("nom");
 				int places = rs.getInt("places");
-				double slat = rs.getDouble("start_lat");
-				double slng = rs.getDouble("start_lng");
-				double elat = rs.getDouble("end_lat");
-				double elng = rs.getDouble("end_lng");
+				String origin = rs.getString("origin");
+				String destination = rs.getString("destination");
 				Date date = rs.getDate("depart");
 				int user_id = rs.getInt("user_id");
 				int status = rs.getInt("status");
-				Trajet trajet = new Trajet(id,name,places,slat,slng,elat,elng,date,user_id,status);
+				Trajet trajet = new Trajet(id,name,places,origin,destination,date,user_id,status);
 				trajets.add(trajet);
 			}
 			rs.close();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "get trajets dispo", e);
 		}
 		
 		return trajets;
@@ -165,7 +161,7 @@ public class TrajetManagerDB {
 	
 	public List<Trajet> GetTrajetPerso(int user_id){
 		PreparedStatement stmt = null;
-		List<Trajet> trajets = null;
+		List<Trajet> trajets = new ArrayList<>();
 		ResultSet rs = null;
 		try{
 			String trajetSQL = "SELECT * FROM trajets where user_id = ? ";
@@ -174,21 +170,19 @@ public class TrajetManagerDB {
 			rs = stmt.executeQuery();
 			while(rs.next()){
 				int id = rs.getInt("id");
-				String name = rs.getString("name");
+				String name = rs.getString("nom");
 				int places = rs.getInt("places");
-				double slat = rs.getDouble("start_lat");
-				double slng = rs.getDouble("start_lng");
-				double elat = rs.getDouble("end_lat");
-				double elng = rs.getDouble("end_lng");
+				String origin = rs.getString("origin");
+				String destination = rs.getString("destination");
 				Date date = rs.getDate("depart");
 				int status = rs.getInt("status");
-				Trajet trajet = new Trajet(id,name,places,slat,slng,elat,elng,date,user_id,status);
+				Trajet trajet = new Trajet(id,name,places,origin,destination,date,user_id,status);
 				trajets.add(trajet);
 			}
 			rs.close();
 			stmt.close();
 		}catch(SQLException e){
-			e.printStackTrace();
+			log.log(Level.SEVERE, "get trajet perso", e);
 		}
 		
 		return trajets;
