@@ -85,7 +85,19 @@ public class User {
         this.activated = true;
     }
     
-    public String getStringUser(){
+    public User(String firstname, String lastname, String email, String password, String salt, String token,
+			boolean activated) {
+		super();
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.email = email;
+		this.password = password;
+		this.salt = salt;
+		this.token = token;
+		this.activated = activated;
+	}
+
+	public String getStringUser(){
     	return "Firstname :" + this.firstname +
     			"\n Lastname" + this.lastname +
     			"\n email" + this.email +

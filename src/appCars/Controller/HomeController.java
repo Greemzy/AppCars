@@ -32,18 +32,16 @@ public class HomeController {
 		 if (result.hasErrors()) {
 			 modelview.addObject("error", "There are errors");
 		 }
-		 //model.addAttribute("email", user.getEmail());
-		 //model.addAttribute("password", user.getPassword());
-		 User user2 = manager.getUser(user.getEmail());
-		 if(user2 != null)
+		 
+		 if(manager.EmailExist(user.getEmail()))
 		 {
+			 User user2 = manager.getUser(user.getEmail());
 			 if(BCrypt.checkpw(user.getPassword(), user2.getPassword())){
 				 session.setAttribute( "user", user2 );
 				 modelview.setViewName("home");
 			 }
 			 else{
-				 modelview.addObject("error", user.getPassword());
-				 modelview.addObject("msg", "email :" + user2.getStringUser());
+				 modelview.addObject("error", "mot de passe incorrect");
 				 modelview.setViewName("login");
 			 } 
 		 }
