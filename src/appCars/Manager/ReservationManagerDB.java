@@ -60,10 +60,9 @@ public class ReservationManagerDB {
 		PreparedStatement stmt = null;
 		int result = 0;
 		try{
-			String reservSQL = "UPDATE users_trajets SET status = ? WHERE id = ?";
+			String reservSQL = "DELETE FROM users_trajets WHERE id = ?";
 			stmt = this.connection.prepareStatement(reservSQL);
-			stmt.setInt(1,4);
-			stmt.setInt(2, id);
+			stmt.setInt(1, id);
 			result = stmt.executeUpdate();
 			stmt.close();
 		}catch(SQLException e){
@@ -86,7 +85,7 @@ public class ReservationManagerDB {
 				int trajet_id = rs.getInt("trajet_id");
 				int user_id = rs.getInt("user_id");
 				int place = rs.getInt("place");
-				Date date = rs.getDate("depart");
+				Date date = rs.getDate("date");
 				int status = rs.getInt("status");
 				reservation = new Reservation(id,trajet_id,user_id,place,date,status);
 				break;
@@ -104,7 +103,7 @@ public class ReservationManagerDB {
 		List<Reservation> reservations = new ArrayList<>();
 		ResultSet rs = null;
 		try{
-			String reservationsSQL = "SELECT * FROM users_trajets where user_id = ? ";
+			String reservationsSQL = "SELECT users_trajets.id,users_trajets.trajet_id,users_trajets.place,users_trajets.date,users_trajets.status,trajets.nom FROM users_trajets INNER JOIN trajets on trajets.id = users_trajets.trajet_id where users_trajets.user_id = ?";
 			stmt = this.connection.prepareStatement(reservationsSQL);
 			stmt.setInt(1, user_id);
 			rs = stmt.executeQuery();
@@ -112,9 +111,11 @@ public class ReservationManagerDB {
 				int id = rs.getInt("id");
 				int trajet_id = rs.getInt("trajet_id");
 				int place = rs.getInt("place");
-				Date date = rs.getDate("depart");
+				Date date = rs.getDate("date");
 				int status = rs.getInt("status");
 				Reservation reservation = new Reservation(id,trajet_id,user_id,place,date,status);
+				String name = rs.getString("nom");
+				reservation.setName(name);
 				reservations.add(reservation);
 			}
 			rs.close();

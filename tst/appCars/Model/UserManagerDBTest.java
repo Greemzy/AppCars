@@ -32,10 +32,10 @@ public class UserManagerDBTest {
 		User u = new User("firstname","lastname","test@email.fr",password,salt,"",true);
 		
 		boolean successAdd = manager.createUser(u);
-		assertTrue("true",successAdd);
+		Assert.assertTrue("true",successAdd);
 		
 		boolean successDelete = manager.DeleteUser(u.getEmail());
-		assertTrue("true",successDelete);
+		Assert.assertTrue(successDelete);
 	}
 
 	
@@ -49,7 +49,8 @@ public class UserManagerDBTest {
 		Assert.assertTrue("Should be able to create a  user", userCreated);
 		
 		Assert.assertTrue("The user should exist", manager.EmailExist(u.getEmail()));
-		Assert.assertTrue("The user should exist with password test", BCrypt.checkpw(u.getPassword(), "test"));
+		boolean test =  BCrypt.checkpw(u.getPassword(),"test");
+		Assert.assertTrue("The user should exist with password test",test);
 		Assert.assertFalse("The user should exist but not with this password", BCrypt.checkpw(u.getPassword(), "test1"));
 		
 		User getu = manager.getUser(u.getEmail());

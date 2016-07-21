@@ -4,12 +4,14 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 
 public class Reservation {
+	
     private int id;
     private int trajet_id;
     private int user_id;
     private int place;
     private Date date;
     private int status;
+    private String name;
     
     public Reservation(){
     	
@@ -73,5 +75,13 @@ public class Reservation {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
+	public void setName(String name){
+		this.name = name;
 	}
 }

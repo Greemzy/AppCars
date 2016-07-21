@@ -10,7 +10,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import appCars.Manager.ReservationManagerDB;
 import appCars.Manager.TrajetManagerDB;
+import appCars.Model.Reservation;
 import appCars.Model.Trajet;
 import appCars.Model.User;
 
@@ -18,6 +21,7 @@ import appCars.Model.User;
 public class TrajetController {
  
 	private TrajetManagerDB manager = new TrajetManagerDB();
+	private ReservationManagerDB managerReservation = new ReservationManagerDB();
 	
 	@RequestMapping(value = "/trajet", method = RequestMethod.GET)
 	public ModelAndView register(HttpServletRequest request) {
@@ -27,8 +31,14 @@ public class TrajetController {
 	  if(session.getAttribute("user") == null){
 		  return new ModelAndView("redirect:/home");
 	  }
-	  List<Trajet> trajets = manager.GetTrajetsDispo();
+	  User user = (User)session.getAttribute("user");
+	  
+	  List<Trajet> trajets = manager.GetTrajetsDispo(user.getId());
 	  model.addObject("trajets", trajets);
+	  
+	  List<Reservation> reservations = managerReservation.GetReservationPerso(user.getId());
+	  model.addObject("reservations", reservations);
+	  
 	  String error = request.getParameter("error"); 
 	  if(error != null){
 		  model.addObject("error", error);

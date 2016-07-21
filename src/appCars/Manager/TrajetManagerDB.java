@@ -62,10 +62,9 @@ public class TrajetManagerDB {
 		PreparedStatement stmt = null;
 		int result = 0;
 		try{
-			String trajetSQL = "UPDATE trajets SET status = ? WHERE id = ?";
+			String trajetSQL = "DELETE FROM trajets WHERE id = ?";
 			stmt = this.connection.prepareStatement(trajetSQL);
-			stmt.setBoolean(1, false);
-			stmt.setInt(2, id);
+			stmt.setInt(1, id);
 			result = stmt.executeUpdate();
 			stmt.close();
 		}catch(SQLException e){
@@ -127,16 +126,17 @@ public class TrajetManagerDB {
 		return i;
 	}
 	
-	public List<Trajet> GetTrajetsDispo(){
+	public List<Trajet> GetTrajetsDispo(int iduser){
 		PreparedStatement stmt = null;
 		List<Trajet> trajets = new ArrayList<>();
 		ResultSet rs = null;
 		try{
-			String trajetSQL = "SELECT * FROM trajets where depart < ?";
+			String trajetSQL = "SELECT * FROM trajets where depart < ? and user_id != ?";
 			stmt = this.connection.prepareStatement(trajetSQL);
 			// create a java calendar instance
 			Date datestring = new java.sql.Date(Calendar.getInstance().getTime().getTime());
 			stmt.setDate(1, datestring);
+			stmt.setInt(2, iduser);
 			rs = stmt.executeQuery();
 			while(rs.next()){
 				int id = rs.getInt("id");

@@ -58,6 +58,32 @@
 		    </table>
 		</div>
 	</div>
+	<div class="row" style="margin-top:20px;">
+		<div class="col-md-7">
+			<table id="example2" class="table table-striped table-bordered" cellspacing="0" width="100%">
+		        <thead>
+		            <tr>
+		                <th>Trajet</th>
+		                <th>Place Réservée</th>
+		                <th>Date</th>
+		                <th>Action</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+			        <c:if test="${not empty reservations}">
+						<c:forEach var="listValue" items="${reservations}">
+							<tr>
+								<td>${listValue.name}</td>
+				        		<td>${listValue.place}</td>
+				        		<td>${listValue.date}</td>
+				        		<td><a href="reservationdelete?id=${listValue.id}" class="btn btn-default" >Annuler</a></td>
+							</tr>
+						</c:forEach>		
+					</c:if>	
+		        </tbody>
+		    </table>
+		</div>
+	</div>
 </div>
 
 <%@include file="reservation.jsp" %>
